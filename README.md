@@ -74,7 +74,17 @@ No original vector logo or reference imagery was present in the repository durin
 
 ## Deployment
 
-Deploy as a standard Next.js 16 application on a Node-compatible host (Node.js 20.9+). Configure the variables above in the host's environment settings, use a verified email sender domain, and set the canonical site URL. Run `npm run lint`, `npm run typecheck` and `npm run build` before release. The form requires a server runtime and outbound access to `api.resend.com`; a static export is not supported. Security headers are defined in `next.config.ts`. `npm audit --omit=dev` reports no production dependency vulnerabilities. A full `npm audit` currently reports moderate advisories in the development-only ESLint dependency tree (including a `minimatch` glob-amplification advisory); npm's forced remediation proposes a breaking downgrade of the lint toolchain, so it was not applied. Recheck this toolchain advisory as upstream ESLint plugins publish compatible fixes.
+The repository includes a GitHub Actions workflow at `.github/workflows/ci-deploy.yml`. Pull requests targeting `main` and pushes to `main` run lint, typecheck and a production build. After those checks pass, pushes to `main` deploy to Vercel using the Vercel CLI. The workflow targets the GitHub `production` environment and intentionally skips deployment with a notice until its Vercel secrets are configured; production has not been connected or deployed from this repository yet.
+
+To connect it, create/select the Vercel project for this repository, then add these secrets under GitHub **Settings → Environments → production**:
+
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
+Set the site's production environment variables in Vercel (including the verified `NEXT_PUBLIC_SITE_URL`, any confirmed public contact channels, and the three Resend variables if inquiry delivery is required). Redeploy after configuring variables. Once a change is merged to `main`, the workflow verifies it and deploys the prebuilt production output. Configure required reviewers on the GitHub `production` environment if deployment approval is desired. No Vercel credentials, project IDs, verified domain, or provider connection were available during this work, so no live deployment or DNS configuration is claimed.
+
+The app requires a Node-compatible server runtime (Node.js 20.9+) and outbound access to `api.resend.com`; a static export is not supported. Security headers are defined in `next.config.ts`. `npm audit --omit=dev` reports no production dependency vulnerabilities. A full `npm audit` currently reports moderate advisories in the development-only ESLint dependency tree (including a `minimatch` glob-amplification advisory); npm's forced remediation proposes a breaking downgrade of the lint toolchain, so it was not applied. Recheck this toolchain advisory as upstream ESLint plugins publish compatible fixes.
 
 ## Known configuration items
 
